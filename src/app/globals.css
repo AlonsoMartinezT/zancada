@@ -1,26 +1,248 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-negro: #0a0a0a;
+  --color-carbon: #141414;
+  --color-carbon-2: #1c1c1c;
+  --color-linea: #2b2b2b;
+  --color-hueso: #f2f1ec;
+  --color-gris: #9a9a94;
+  --color-volt: #d7ff3f;
+  --color-volt-oscuro: #a8cc1f;
+  --color-rojo: #ff3b30;
+
+  --font-display: var(--font-bebas), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-padding-top: 5.5rem;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-negro);
+  color: var(--color-hueso);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-volt);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-volt);
+  color: var(--color-negro);
+}
+
+/* Etiqueta tipo SKU / ficha técnica */
+.folio {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-gris);
+}
+
+/* Franja de precaución industrial, único ornamento repetido del sistema */
+.franja {
+  background: repeating-linear-gradient(-45deg, var(--color-volt) 0 14px, var(--color-negro) 14px 28px);
+}
+
+/* ---------- Fotos: viñeta hacia el negro, sin difuminar el sujeto ----------
+   A diferencia de las paletas claras del portafolio, aquí el fondo YA es oscuro:
+   basta con oscurecer el borde de cada foto para que se funda con el layout. */
+/* Sin `position` propia: cada uso ya trae `relative` o `absolute` de Tailwind
+   directamente en la clase; declararlo aquí (fuera de @layer) le ganaría en
+   cascada a la utilidad `absolute` y colapsaría el contenedor a 0 de alto. */
+.foto-viñeta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 100% at var(--fx, 50%) var(--fy, 50%), transparent 55%, var(--color-negro) 100%);
+}
+.foto-viñeta img {
+  filter: contrast(1.08) saturate(0.92) brightness(0.94);
+}
+
+/* Fundido de borde para tiras horizontales (scroller, marquesina) */
+.fundido-h {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* ============================================================
+   ANIMACIÓN LIGADA AL SCROLL (eje central del sitio)
+   Nativa con `animation-timeline`; con respaldo por IntersectionObserver
+   para Firefox y navegadores sin soporte (ver ScrollFX.tsx).
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes sube-y-aparece {
+      from {
+        opacity: 0;
+        translate: 0 3rem;
+        scale: 0.97;
+      }
+    }
+    .sf-sube {
+      animation: sube-y-aparece linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+
+    @keyframes aparece {
+      from { opacity: 0; }
+    }
+    .sf-aparece {
+      animation: aparece linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+
+    @keyframes desde-izq {
+      from { opacity: 0; translate: -3.5rem 0; }
+    }
+    .sf-izq {
+      animation: desde-izq linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    @keyframes desde-der {
+      from { opacity: 0; translate: 3.5rem 0; }
+    }
+    .sf-der {
+      animation: desde-der linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+
+    /* Parallax: la capa se traslada durante todo su paso por la ventana */
+    @keyframes parallax-lento {
+      from { translate: 0 -6%; }
+      to { translate: 0 6%; }
+    }
+    .sf-parallax {
+      animation: parallax-lento linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    /* Escala de salida: el hero se encoge levemente al salir de pantalla */
+    @keyframes encoge-sale {
+      to { scale: 0.92; opacity: 0.4; }
+    }
+    .sf-encoge-salida {
+      animation: encoge-sale linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+/* Cuando no hay soporte nativo, JS (ScrollFX) agrega .sf-listo vía IntersectionObserver */
+.sf-sube, .sf-aparece, .sf-izq, .sf-der {
+  transition: opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1), translate 700ms cubic-bezier(0.2, 0.8, 0.2, 1), scale 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@supports not ((animation-timeline: view()) and (animation-range: entry)) {
+  .sf-sube, .sf-izq, .sf-der { opacity: 0; translate: 0 3rem; }
+  .sf-izq { translate: -3.5rem 0; }
+  .sf-der { translate: 3.5rem 0; }
+  .sf-aparece { opacity: 0; }
+  .sf-sube.sf-listo, .sf-izq.sf-listo, .sf-der.sf-listo { opacity: 1; translate: 0 0; }
+  .sf-aparece.sf-listo { opacity: 1; }
+}
+
+/* Barra de progreso de lectura, fijada en la parte superior */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    #progreso-scroll {
+      transform-origin: 0 50%;
+      scale: 0 1;
+      animation: crecer-progreso auto linear;
+      animation-timeline: scroll(root);
+    }
+    @keyframes crecer-progreso {
+      from { scale: 0 1; }
+      to { scale: 1 1; }
+    }
+  }
+}
+
+/* Marquesina infinita (banda de anuncios) */
+@media (prefers-reduced-motion: no-preference) {
+  .marquesina-pista {
+    animation: marquesina 22s linear infinite;
+  }
+  @keyframes marquesina {
+    to { translate: -50% 0; }
+  }
+}
+
+/* ---------- Formularios ---------- */
+.campo {
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-linea);
+  background: var(--color-carbon);
+  padding: 0.85rem 1rem;
+  color: var(--color-hueso);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.campo:focus {
+  outline: none;
+  border-color: var(--color-volt);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-volt) 22%, transparent);
+}
+.campo:user-invalid {
+  border-color: var(--color-rojo);
+  background: color-mix(in oklab, var(--color-rojo) 10%, var(--color-carbon));
+}
+.error-campo {
+  display: none;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-rojo);
+}
+.campo:user-invalid ~ .error-campo {
+  display: block;
+}
+
+/* Cajón lateral (<dialog>) */
+dialog.cajon {
+  margin: 0 0 0 auto;
+  height: 100dvh;
+  max-height: none;
+  width: min(28rem, 100vw);
+  max-width: none;
+}
+dialog.cajon::backdrop {
+  background: color-mix(in oklab, var(--color-negro) 65%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.cajon[open] {
+    animation: cajon-entra 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes cajon-entra {
+    from { translate: 100% 0; }
+  }
+}
+
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(.pieza) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.cajon[open] { animation: none; }
+  .marquesina-pista { animation: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
 }
