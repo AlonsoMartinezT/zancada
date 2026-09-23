@@ -69,7 +69,6 @@ Fotos de [Unsplash](https://unsplash.com) bajo la [licencia de Unsplash](https:/
 | `caminando.jpg` | [Amirhossein Hasani](https://unsplash.com/photos/pAmqSVguAEc) |
 | `skyline.jpg` | [Vong Vathanak](https://unsplash.com/photos/yKdA0Qwk2eg) |
 | `sombra.jpg` | [Se. Tsuchiya](https://unsplash.com/photos/i9Qautx3SrQ) |
-| `minimal-a.jpg` | [Trendest Studio](https://unsplash.com/photos/XZ3EmAIWuz0) |
 | `minimal-b.jpg` | [The DK Photography](https://unsplash.com/photos/3GRO5BCcKgI) |
 | `studio-pair.jpg` | [The DK Photography](https://unsplash.com/photos/jc0o2j7T5LA) |
 | `mano-beige.jpg` | [Aditya Sharma](https://unsplash.com/photos/NEZoHojAxds) |

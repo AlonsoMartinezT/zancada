@@ -187,6 +187,13 @@ body {
   display: none;
 }
 
+/* La foto trae su propio fondo de estudio: se funde con el carbón de la
+   sección en vez de verse como un recorte rectangular pegado encima. */
+.vitrina-tenis {
+  -webkit-mask-image: radial-gradient(closest-side, #000 68%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 68%, transparent 100%);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @supports ((animation-timeline: view()) and (animation-range: entry)) {
     .vitrina-pista {

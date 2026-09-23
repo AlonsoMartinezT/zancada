@@ -23,7 +23,7 @@ export default function Vitrina() {
         </div>
 
         <div className="vitrina-tenis relative mx-auto mt-10 aspect-square w-[68vw] max-w-lg sm:w-[40vw]">
-          <Image src={asset("/img/sombra.jpg")} alt="El Runner 01 en el aire, visto desde distintos ángulos según avanzas" fill sizes="(min-width: 1024px) 40vw, 68vw" className="object-contain" />
+          <Image src={asset("/img/concepto-naranja.jpg")} alt="El Runner 01 en el aire, visto desde distintos ángulos según avanzas" fill sizes="(min-width: 1024px) 40vw, 68vw" className="object-contain" />
         </div>
 
         <div className="relative mt-10 h-28 w-full max-w-sm text-center sm:h-24">
