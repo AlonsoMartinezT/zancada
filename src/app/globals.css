@@ -171,6 +171,82 @@ body {
   }
 }
 
+/* ============================================================
+   VITRINA: el tenis se mueve de verdad con el scroll.
+   No es un fade-in: la sección mide 340vh y adentro el tenis queda
+   fijo en pantalla (position: sticky) mientras giras, agranda y
+   desplaza la propia foto según cuánto has scrolleado.
+
+   Estado base (sin @supports/@media): el tenis se ve quieto y
+   centrado, solo con la primera ficha técnica. Así lo ven Firefox
+   y quien pide menos movimiento — nunca una animación a medias.
+   ============================================================ */
+.vitrina-c2,
+.vitrina-c3,
+.vitrina-progreso {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    .vitrina-pista {
+      height: 340vh;
+      view-timeline-name: --vitrina;
+      view-timeline-axis: block;
+    }
+    .vitrina-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden; /* el tenis viaja hasta ±32vw: sin esto, scroll horizontal fantasma */
+    }
+    .vitrina-progreso {
+      display: flex;
+    }
+    .vitrina-c2,
+    .vitrina-c3 {
+      display: block;
+    }
+
+    /* El "contain" de un elemento de 340vh coincide exactamente con el tramo
+       en que su hijo sticky queda fijo: por eso se usa aquí y no "cover". */
+    @keyframes vitrina-tenis {
+      0% { translate: -32vw 6vh; rotate: -28deg; scale: 0.55; opacity: 0; }
+      12% { opacity: 1; }
+      50% { translate: 0 0; rotate: 0deg; scale: 1.15; opacity: 1; }
+      88% { opacity: 1; }
+      100% { translate: 32vw -6vh; rotate: 24deg; scale: 0.55; opacity: 0; }
+    }
+    .vitrina-tenis {
+      animation: vitrina-tenis linear both;
+      animation-timeline: --vitrina;
+      animation-range: contain 0% contain 100%;
+    }
+
+    /* Cada ficha técnica entra y sale en su propio tercio del recorrido */
+    @keyframes vitrina-texto {
+      0%, 100% { opacity: 0; translate: 0 1rem; }
+      18%, 82% { opacity: 1; translate: 0 0; }
+    }
+    .vitrina-c1 { animation: vitrina-texto linear both; animation-timeline: --vitrina; animation-range: contain 2% contain 32%; }
+    .vitrina-c2 { animation: vitrina-texto linear both; animation-timeline: --vitrina; animation-range: contain 36% contain 66%; }
+    .vitrina-c3 { animation: vitrina-texto linear both; animation-timeline: --vitrina; animation-range: contain 70% contain 98%; }
+
+    /* Tres barras que se rellenan una tras otra: en cuál de los tres tramos vas */
+    @keyframes vitrina-barra {
+      from { scale: 0 1; }
+      to { scale: 1 1; }
+    }
+    .vitrina-barra {
+      transform-origin: 0 50%;
+      scale: 0 1;
+    }
+    .vitrina-b1 { animation: vitrina-barra linear both; animation-timeline: --vitrina; animation-range: contain 0% contain 33%; }
+    .vitrina-b2 { animation: vitrina-barra linear both; animation-timeline: --vitrina; animation-range: contain 33% contain 66%; }
+    .vitrina-b3 { animation: vitrina-barra linear both; animation-timeline: --vitrina; animation-range: contain 66% contain 100%; }
+  }
+}
+
 /* Marquesina infinita (banda de anuncios) */
 @media (prefers-reduced-motion: no-preference) {
   .marquesina-pista {

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Icono from "@/components/Icono";
 import TarjetaProducto from "@/components/TarjetaProducto";
+import Vitrina from "@/components/Vitrina";
 import { categorias, productos } from "@/data/productos";
 import { asset } from "@/lib/asset";
 import { pesos } from "@/lib/formato";
@@ -91,6 +92,9 @@ export default function Inicio() {
           ))}
         </div>
       </section>
+
+      {/* ═══════════ Vitrina: el tenis se mueve con el scroll ═══════════ */}
+      <Vitrina />
 
       {/* ═══════════ Producto destacado grande, parallax de dos capas ═══════════ */}
       {destacados[0] && (

@@ -8,13 +8,13 @@
 
 ## El brief
 
-Un e-commerce completo (catálogo, carrito, checkout) para una marca de "drops" limitados, con la **animación ligada al scroll** como eje central del diseño: parallax en el hero, aparición escalonada de tarjetas, una marquesina infinita y una barra de progreso de lectura — todo nativo en CSS, sin librerías de animación.
+Un e-commerce completo (catálogo, carrito, checkout) para una marca de "drops" limitados, con la **animación ligada al scroll** como eje central del diseño — no solo secciones que aparecen: hay una vitrina donde **el tenis en sí gira, se traslada y cambia de tamaño** según cuánto scrolleas, además de parallax en el hero, aparición escalonada de tarjetas, una marquesina infinita y una barra de progreso de lectura. Todo nativo en CSS, sin librerías de animación.
 
 ## Qué incluye (25 páginas estáticas)
 
 | Ruta | Función |
 | --- | --- |
-| `/` | Hero con parallax de foto, cifras, marquesina de catálogo, categorías, producto destacado con parallax de dos capas, pasos del drop y galería horizontal |
+| `/` | Hero con parallax de foto, cifras, marquesina de catálogo, categorías, **vitrina donde el tenis gira y se mueve con el scroll**, producto destacado con parallax de dos capas, pasos del drop y galería horizontal |
 | `/tienda` | 15 productos con filtros (categoría, talla, disponibilidad, precio) guardados en la URL |
 | `/producto/[slug]` | Selector de color (cambia la foto) y talla con stock por talla, ficha de materiales, relacionados |
 | Carrito lateral + `/carrito` | Cantidades, barra de envío gratis, quitar piezas |
@@ -26,12 +26,13 @@ Un e-commerce completo (catálogo, carrito, checkout) para una marca de "drops" 
 
 Todo con `animation-timeline` nativo de CSS (`view()` y `scroll()`), definido en `src/app/globals.css`:
 
+- **La vitrina (`src/components/Vitrina.tsx`)** — el efecto principal. Es una sección de **340vh** con un interior `position: sticky` que se queda fijo en pantalla mientras haces scroll; en ese tramo, la propia foto del tenis (no un contenedor genérico) se anima con `translate` + `rotate` + `scale` + `opacity` ligados 1:1 a la posición del scroll (`view-timeline-name` en la sección + `animation-range: contain 0%…100%` en la foto). Tres fichas técnicas y tres barras de avance aparecen en su propio tercio del recorrido, con la misma técnica.
 - **`.sf-sube` / `.sf-izq` / `.sf-der` / `.sf-aparece`** — aparición de secciones y tarjetas al entrar en pantalla (`animation-range: entry`).
 - **`.sf-parallax`** — capas de foto que se desplazan durante todo su paso por la ventana (hero y producto destacado).
 - **Barra de progreso** en el encabezado — `animation-timeline: scroll(root)`, crece de 0 a 1 con el scroll de toda la página.
 - **Marquesina infinita** — cinta de anuncios y de productos, en bucle CSS puro.
 
-Cada efecto respeta `prefers-reduced-motion: reduce` (se desactiva por completo) y tiene respaldo: `src/components/ScrollFX.tsx` agrega las clases finales vía `IntersectionObserver` en navegadores sin `animation-timeline` (Firefox), sin usar `scroll-timeline-polyfill` (incompleto, según la guía de referencia).
+Cada efecto respeta `prefers-reduced-motion: reduce` (se desactiva por completo; la vitrina se ve entonces fija y centrada, con una sola ficha técnica) y tiene respaldo para navegadores sin `animation-timeline` (Firefox): `src/components/ScrollFX.tsx` agrega las clases finales vía `IntersectionObserver` para las apariciones, y para la vitrina **recalcula a mano el mismo recorrido** con un listener de scroll (rAF-throttled) que interpola los mismos puntos clave que las `@keyframes`, para que el tenis también se mueva ahí. No se usa `scroll-timeline-polyfill` (incompleto, según la guía de referencia).
 
 ## Reglas de negocio
 
